@@ -32,7 +32,7 @@ app.use(cors({
 
 
 
-app.get('/karaage', async (req, res) => {
+app.get('/viewmeals', async (req, res) => {
     try {
         const myquery = "SELECT * from meal;"
         db.query(myquery, (err, result) => {
@@ -52,6 +52,49 @@ app.get('/karaage', async (req, res) => {
         res.status(500).json({error: "Recipe not found"})
     }
 });
+
+app.get('/getmeal/:idmeal', async (req, res) => {
+    const idmeal = req.params.idmeal;
+    try {
+        const myquery = "SELECT * from meal WHERE idmeal = ?;"
+        db.query(myquery, [idmeal], (err, result) => {
+            if (err) {
+                console.log("sql error:", err);
+            }
+            else{
+                res.send(result)
+            }
+        });
+    }
+    catch(error){
+        console.error(error)
+        res.status(500).json({error: "SQL error"})
+    }
+  });
+
+
+  app.put('/updatemeal', (req, res) => {
+    const {idmeal, mealname, mealcategory, mealarea, mealinstructions} = req.body;
+    const myquery = "UPDATE meal SET meal = ?, category = ?, area = ?, instructions = ? where idmeal = ?;"
+    db.query(myquery, [mealname, mealcategory, mealarea, mealinstructions, idmeal], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+              return res.status(200).json({message: "Updated successfully", success: true, data: result});
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
 
 app.post('/insertmeal', (req, res) => {
 
